@@ -57,7 +57,7 @@ const server = http.createServer((req,res)=>{
     else if(req.url.match('\.svg$')){
         const imgFile = path.join(__dirname,'publick',req.url);
         const readStream = fs.createReadStream(imgFile);
-        res.writeHead(200,{'content-type':'image/svg'})
+        res.writeHead(200,{'content-type':'image/svg+xml'})
         readStream.pipe(res);
     }
     else if(req.url.match('\.png$')){
