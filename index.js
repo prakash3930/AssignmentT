@@ -38,16 +38,23 @@ const server = http.createServer((req, res) => {
     }
     else if (req.url.match('\.css$')) {
         const cssFile = path.join(__dirname, 'publick', req.url);
-        const readFile = fs.createReadStream(cssFile,"utf-8");
-        readFile.on('error', (err) => {
-            console.log(`Error reading file: ${err}`);
+        if (fs.existsSync(cssFile)) {
+            const readStream = fs.createReadStream(cssFile, 'utf-8');
+            readStream.on('error', (err) => {
+                console.log(`Error reading file: ${err}`);
+                const errorCssFile = path.join(__dirname, 'publick', 'publick_css', 'error.css');
+                const errorCssStream = fs.createReadStream(errorCssFile, 'utf-8');
+                res.writeHead(200, { 'Content-Type': 'text/css' });
+                errorCssStream.pipe(res);
+            });
+            res.writeHead(200, { 'content-type': 'text/css' });
+            readStream.pipe(res);
+        } else {
             const errorCssFile = path.join(__dirname, 'publick', 'publick_css', 'error.css');
-            const errorCssStream = fs.createReadStream(errorCssFile,'utf-8');
-            res.writeHead(404, { 'Content-Type': 'text/css' });
+            const errorCssStream = fs.createReadStream(errorCssFile, 'utf-8');
+            res.writeHead(200, { 'Content-Type': 'text/css' });
             errorCssStream.pipe(res);
-        });
-        res.writeHead(200,{'content-type':'text/css'})
-        readFile.pipe(res);
+        }
     }
 else if (req.url.match('\.gif$')) {
   const imgFile = path.join(__dirname, 'publick', req.url);
